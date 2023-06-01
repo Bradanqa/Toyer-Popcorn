@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{585d6396-a373-44e3-9cb8-2b4b9cbe021b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{b15136da-4900-4dbc-a80c-c1d768ac871d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Level">
+      <UniqueIdentifier>{37c905df-4116-49ca-89db-8c5a339ee11e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Active_Brick">
+      <UniqueIdentifier>{7866546e-677c-4d2d-b88a-dc89995b326e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Falling_Letter">
+      <UniqueIdentifier>{9597b57a-767c-4d5d-bc49-1a9dd2bd4281}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Ball">
+      <UniqueIdentifier>{3aa34288-b31b-4422-a690-ffcd285d442d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Ball\Ball">
+      <UniqueIdentifier>{66fdd27f-d473-489d-b63f-86a6d386684f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Ball\Ball_Set">
+      <UniqueIdentifier>{5a5ee885-eb43-4fed-9089-e90d795fb7f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Laser_Beam">
+      <UniqueIdentifier>{8f9780bc-fde8-4d97-a3e9-d801b8b5c781}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Laser_Beam\Laser_Beam">
+      <UniqueIdentifier>{8f52aefe-e836-4745-b977-602e15afc8b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Laser_Beam\Laser_Beam_Set">
+      <UniqueIdentifier>{b792ac86-05d7-4ed6-901a-f6e093c42dae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Platform">
+      <UniqueIdentifier>{792951ce-106e-42bd-8189-96267ec7ead2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Platform\Platform">
+      <UniqueIdentifier>{caa173e3-fddf-457a-945f-661f3de47118}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Platform\Platform_Expanding">
+      <UniqueIdentifier>{edf6aeda-a660-41f3-bee1-cb4edd8dcb73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Platform\Platform_Glue">
+      <UniqueIdentifier>{969fa9e9-f704-4fc9-9bc0-90065e063660}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Platform\Platform_Laser">
+      <UniqueIdentifier>{f6223f87-d406-4b55-877d-234b5c91ecc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Platform\Platform_State">
+      <UniqueIdentifier>{eb732b6f-c217-4417-884d-cdebd2c7d66d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Tools">
+      <UniqueIdentifier>{c396cb7d-4693-40d9-918b-904ab2455cac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Tools\Config">
+      <UniqueIdentifier>{7cadc097-d847-4949-99bd-8bcb6ded5336}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Border">
+      <UniqueIdentifier>{ab77f21d-e1ba-4cf3-90f3-8ba7e549f4e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Border\Border">
+      <UniqueIdentifier>{ebc44aba-d77d-4f51-a435-c8cdde70de92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Border\Gate">
+      <UniqueIdentifier>{7e0b6b59-d86d-4a81-94af-72a807748046}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Tools\Common">
+      <UniqueIdentifier>{1a52950e-de98-41ed-8305-1fc56a35a8c1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Main.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Border.h">
+      <Filter>#Border\Border</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>#Tools\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Ball.h">
+      <Filter>#Ball\Ball</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform.h">
+      <Filter>#Platform\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Active_Brick.h">
+      <Filter>Active_Brick</Filter>
+    </ClInclude>
+    <ClInclude Include="Falling_Letter.h">
+      <Filter>Falling_Letter</Filter>
+    </ClInclude>
+    <ClInclude Include="Ball_Set.h">
+      <Filter>#Ball\Ball_Set</Filter>
+    </ClInclude>
+    <ClInclude Include="Laser_Beam.h">
+      <Filter>#Laser_Beam\Laser_Beam</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>#Tools\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Laser_Beam_Set.h">
+      <Filter>#Laser_Beam\Laser_Beam_Set</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform_State.h">
+      <Filter>#Platform\Platform_State</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform_Glue.h">
+      <Filter>#Platform\Platform_Glue</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform_Expanding.h">
+      <Filter>#Platform\Platform_Expanding</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform_Laser.h">
+      <Filter>#Platform\Platform_Laser</Filter>
+    </ClInclude>
+    <ClInclude Include="Gate.h">
+      <Filter>#Border\Gate</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Popcorn.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Popcorn.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Border.cpp">
+      <Filter>#Border\Border</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>#Tools\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="Ball.cpp">
+      <Filter>#Ball\Ball</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform.cpp">
+      <Filter>#Platform\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Active_Brick.cpp">
+      <Filter>Active_Brick</Filter>
+    </ClCompile>
+    <ClCompile Include="Falling_Letter.cpp">
+      <Filter>Falling_Letter</Filter>
+    </ClCompile>
+    <ClCompile Include="Ball_Set.cpp">
+      <Filter>#Ball\Ball_Set</Filter>
+    </ClCompile>
+    <ClCompile Include="Laser_Beam.cpp">
+      <Filter>#Laser_Beam\Laser_Beam</Filter>
+    </ClCompile>
+    <ClCompile Include="Common.cpp">
+      <Filter>#Tools\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Laser_Beam_Set.cpp">
+      <Filter>#Laser_Beam\Laser_Beam_Set</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform_State.cpp">
+      <Filter>#Platform\Platform_State</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform_Glue.cpp">
+      <Filter>#Platform\Platform_Glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform_Expanding.cpp">
+      <Filter>#Platform\Platform_Expanding</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform_Laser.cpp">
+      <Filter>#Platform\Platform_Laser</Filter>
+    </ClCompile>
+    <ClCompile Include="Gate.cpp">
+      <Filter>#Border\Gate</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
