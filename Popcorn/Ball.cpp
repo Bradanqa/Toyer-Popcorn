@@ -9,7 +9,7 @@ ABall::ABall()
    : Ball_State(EBall_State::Disabled), Prev_Ball_State(EBall_State::Disabled), Release_Timer_Tick(0), Center_X_Pos(0.0), Center_Y_Pos(0.0), Ball_Speed(0.0), Prev_Ball_Speed(0.0),
    Ball_Direction(0.0), Prev_Ball_Direction(0.0), Testing_Is_Active(false), Test_Iteration(0), Ball_Rect{}, Prev_Ball_Rect{}
 {
-   //Set_State(EBall_State::Normal, 0);
+
 }
 //-------------------------------------------------------------------------------------------------------------------------
 void ABall::Act()
