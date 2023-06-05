@@ -232,7 +232,7 @@ bool AsPlatform::Is_Finished()
 	return false;
 }
 //------------------------------------------------------------------------------------------------------------
-void AsPlatform::Init(ABall_Set *ball_set, ALaser_Beam_Set *laser_beam_set)
+void AsPlatform::Init(ABall_Set *ball_set, AsLaser_Beam_Set *laser_beam_set)
 {
 	Ball_Set = ball_set;
 

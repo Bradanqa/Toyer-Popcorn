@@ -11,7 +11,7 @@ public:
    ~AsPlatform_Laser();
    AsPlatform_Laser(AsPlatform_State &platform_state);
 
-   void Init(ALaser_Beam_Set *laser_beam_set, AColor &platform_inner_color, AColor &platform_circle_color, AColor &gun_color);
+   void Init(AsLaser_Beam_Set *laser_beam_set, AColor &platform_inner_color, AColor &platform_circle_color, AColor &gun_color);
    bool Act(EPlatform_State &next_state, double x_pos);
    void Draw_State(HDC hdc, double x_pos, RECT &platform_rect);
    void Reset();
@@ -34,7 +34,7 @@ private:
    AColor *Gun_Color;
    AsPlatform_State *Platform_State;
 
-   ALaser_Beam_Set *Laser_Beam_Set;
+   AsLaser_Beam_Set *Laser_Beam_Set;
 
    static const int Max_Laser_Transformation_Step = 20;
    static const int Laser_Shot_Timeout = AsConfig::FPS / 2; // 2 раза в секунду

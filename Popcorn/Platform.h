@@ -23,7 +23,7 @@ public:
    virtual void Draw(HDC hdc, RECT& paint_area);
    virtual bool Is_Finished();
 
-   void Init(ABall_Set* ball_set, ALaser_Beam_Set *laser_beam_set);
+   void Init(ABall_Set* ball_set, AsLaser_Beam_Set *laser_beam_set);
    EPlatform_State Get_State();
    void Set_State(EPlatform_State new_state);
    void Set_State(EPlatform_Substate_Regular new_regular_state);

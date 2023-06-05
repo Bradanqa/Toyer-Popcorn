@@ -3,7 +3,7 @@
 
 // ALaser_Beam_Set
 //-------------------------------------------------------------------------------------------------------------------------
-void ALaser_Beam_Set::Fire(double left_gun_x_pos, double right_gun_x_pos)
+void AsLaser_Beam_Set::Fire(double left_gun_x_pos, double right_gun_x_pos)
 {
 	int i;
 	ALaser_Beam *left_beam = 0, *right_beam = 0;
@@ -30,7 +30,7 @@ void ALaser_Beam_Set::Fire(double left_gun_x_pos, double right_gun_x_pos)
 	right_beam->Set_At(right_gun_x_pos, AsConfig::Platform_Y_Pos - 1);
 }
 //------------------------------------------------------------------------------------------------------------
-bool ALaser_Beam_Set::Get_Next_Game_Object(int &index, AGame_Object **game_object)
+bool AsLaser_Beam_Set::Get_Next_Game_Object(int &index, AGame_Object **game_object)
 {
 	if (index < 0 || index >= AsConfig::Max_Ball_Count)
 		return false;
@@ -39,5 +39,5 @@ bool ALaser_Beam_Set::Get_Next_Game_Object(int &index, AGame_Object **game_objec
 
 	return true;
 }
-//-------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 

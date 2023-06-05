@@ -13,7 +13,7 @@ AsPlatform_Laser::AsPlatform_Laser(AsPlatform_State &platform_state)
 {
 }
 //------------------------------------------------------------------------------------------------------------
-void AsPlatform_Laser::Init(ALaser_Beam_Set *laser_beam_set, AColor &platform_inner_color, AColor &platform_circle_color, AColor &highlight_color)
+void AsPlatform_Laser::Init(AsLaser_Beam_Set *laser_beam_set, AColor &platform_inner_color, AColor &platform_circle_color, AColor &highlight_color)
 {
 	Laser_Beam_Set = laser_beam_set;
 	Inner_Color = &platform_inner_color;

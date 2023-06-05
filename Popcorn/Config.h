@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "Common.h"
 
+#include "Common.h"
 
 //-------------------------------------------------------------------------------------------------------------------------
 class AsConfig
@@ -10,7 +10,8 @@ public:
 
    static bool Level_Has_Floor;
    static int Current_Timer_Tick;
-   static const AColor BG_Color, Orange_Color, Blue_Color, White_Color, Letter_Color, Gate_Color, Laser_Color;
+   static const AColor BG_Color, BG_Outline_Color, Orange_Color, Blue_Color, White_Color, Letter_Color, Gate_Color, Laser_Color;
+   static const AColor Monster_Dark_Orange, Monster_Cornea_Color, Monster_Iris_Color;
    static const AColor Unbreakable_Blue_Highlight, Unbreakable_Orange_Highlight;
    static const AColor Teleport_Portal_Color;
    static const AColor Advertisement_Orange_Table, Advertisement_Blue_Table;
