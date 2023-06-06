@@ -22,6 +22,7 @@ void AsEngine::Init_Engine(HWND hwnd)
    AsConfig::Hwnd = hwnd;
 
    AActive_Brick_Blue_Orange::Setup_Color();
+   AExplosive_Ball::Setup_Color();
 
    Level.Init();
    Platform.Init(&Ball_Set, &Laser_Beam_Set);

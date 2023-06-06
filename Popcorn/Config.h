@@ -11,7 +11,7 @@ public:
    static bool Level_Has_Floor;
    static int Current_Timer_Tick;
    static const AColor BG_Color, BG_Outline_Color, Orange_Color, Blue_Color, White_Color, Letter_Color, Gate_Color, Laser_Color;
-   static const AColor Monster_Dark_Orange, Monster_Cornea_Color, Monster_Iris_Color;
+   static const AColor Monster_Dark_Orange, Monster_Cornea_Color, Monster_Iris_Color, Explosion_Dark_Orange, Explosion_Dark_Blue;
    static const AColor Unbreakable_Blue_Highlight, Unbreakable_Orange_Highlight;
    static const AColor Teleport_Portal_Color;
    static const AColor Advertisement_Orange_Table, Advertisement_Blue_Table;
@@ -65,5 +65,7 @@ public:
    static void Rect(HDC hdc, int x, int y, int width, int height, const AColor &color);
    static void Ellipse(HDC hdc, RECT &rect, const AColor &color);
    static void Invalidate_Rect(RECT& rect);
+   static unsigned char Get_Fading_Channel(unsigned char color, unsigned char bg_color, int step, int max_step);
+   static void Get_Fading_Color(const AColor& origin_color, int step, AColor& result_color, int max_step);
 };
 //-------------------------------------------------------------------------------------------------------------------------
