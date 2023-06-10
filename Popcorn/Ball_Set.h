@@ -2,7 +2,7 @@
 #include "Ball.h"
 
 //-------------------------------------------------------------------------------------------------------------------------
-class ABall_Set : public AsGame_Objects_Set
+class ABall_Set : public AGame_Objects_Set
 {
 public:
    virtual void Act();
