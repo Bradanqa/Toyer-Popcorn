@@ -2,19 +2,7 @@
 #include "Config.h"
 
 //-------------------------------------------------------------------------------------------------------------------------
-enum class EBall_State: unsigned char
-{
-   Disabled, // Отключен, не рисуется и тд
-
-   Normal,
-   Lost,
-   On_Platform,
-   On_Parachute,
-   Off_Parachute,
-   Teleporting
-};
-//-------------------------------------------------------------------------------------------------------------------------
-class ABall: public AGame_Object
+class ABall: public AGame_Object, public ABall_Object
 {
 public:
    ABall();
@@ -29,27 +17,26 @@ public:
    virtual void Advance(double max_speed);
    virtual double Get_Speed();
 
+   virtual double Get_Direction();
+   virtual void Set_Direction(double new_derection);
+   virtual EBall_State Get_State();
+   virtual void Set_State(EBall_State new_state, double x_pos = 0, double y_pos = 0);
+   virtual void Reflect(bool from_horizontal);
+   virtual void Draw_Teleporting(HDC hdc, int step);
+   virtual void Set_On_Parachute(int brick_x, int brick_y);
+   virtual void Get_Center(double& x_pos, double& y_pos);
+   virtual bool Is_Moving_Up();
+   virtual bool Is_Moving_Left();
+
    void Set_Speed(double new_speed);
-   void Draw_Teleporting(HDC hdc, int step);
    void Set_For_Test();
    bool Is_Test_Finished();
-   EBall_State Get_State();
-   void Set_State(EBall_State new_state, double x_pos = 0, double y_pos = 0);
-   void Get_Center(double& x_pos, double& y_pos);
-   double Get_Direction();
-   void Set_Direction(double new_derection);
-   void Reflect(bool from_horizontal);
-   bool Is_Moving_Up();
-   bool Is_Moving_Left();
-   void Set_On_Parachute(int brick_x, int brick_y);
    void Forced_Advance(double direction, double speed, double max_speed);
    void Release();
 
    int Release_Timer_Tick;
 
    static AHit_Checker_List Hit_Checker_List;
-
-   static const double Radius;
 
 private:
    void Redraw_Ball();

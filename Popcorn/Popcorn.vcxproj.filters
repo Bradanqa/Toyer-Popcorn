@@ -82,8 +82,17 @@
     <Filter Include="#Tools\Common">
       <UniqueIdentifier>{1a52950e-de98-41ed-8305-1fc56a35a8c1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Monster_Set">
+    <Filter Include="#Monsters">
+      <UniqueIdentifier>{b81968e1-1ffb-4e77-9bd6-0b36cc91882c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Monsters\Monster_Set">
       <UniqueIdentifier>{d544ce82-a428-4bd5-92c7-10531b0db241}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Monsters\Explosive_Ball">
+      <UniqueIdentifier>{2e3240f5-7378-426d-9c8e-a957fd75485c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Monsters\Monster">
+      <UniqueIdentifier>{1399bbd7-b0ae-4049-8fdd-ad0ddc344a36}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -151,7 +160,13 @@
       <Filter>#Border\Gate</Filter>
     </ClInclude>
     <ClInclude Include="Monster_Set.h">
-      <Filter>Monster_Set</Filter>
+      <Filter>#Monsters\Monster_Set</Filter>
+    </ClInclude>
+    <ClInclude Include="Explosive_Ball.h">
+      <Filter>#Monsters\Explosive_Ball</Filter>
+    </ClInclude>
+    <ClInclude Include="Monster.h">
+      <Filter>#Monsters\Monster</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -223,7 +238,13 @@
       <Filter>#Border\Gate</Filter>
     </ClCompile>
     <ClCompile Include="Monster_Set.cpp">
-      <Filter>Monster_Set</Filter>
+      <Filter>#Monsters\Monster_Set</Filter>
+    </ClCompile>
+    <ClCompile Include="Explosive_Ball.cpp">
+      <Filter>#Monsters\Explosive_Ball</Filter>
+    </ClCompile>
+    <ClCompile Include="Monster.cpp">
+      <Filter>#Monsters\Monster</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

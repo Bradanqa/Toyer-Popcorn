@@ -58,7 +58,7 @@ AsLevel::AsLevel()
    Level = this;
 }
 //-------------------------------------------------------------------------------------------------------------------------
-bool AsLevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
+bool AsLevel::Check_Hit(double next_x_pos, double next_y_pos, ABall_Object *ball)
 {  // Отражение шарика от крипичей
 
    int i, j;
@@ -70,13 +70,13 @@ bool AsLevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
    bool got_horizontal_hit, got_vertical_hit;
    double horizontal_reflection_pos, vertical_reflection_pos;
 
-   if (next_y_pos + ball->Radius > AsConfig::Level_Y_Offset + (AsConfig::Level_Height - 1) * AsConfig::Cell_Height + AsConfig::Brick_Height)
+   if (next_y_pos + AsConfig::Ball_Radius > AsConfig::Level_Y_Offset + (AsConfig::Level_Height - 1) * AsConfig::Cell_Height + AsConfig::Brick_Height)
       return false;
 
-   min_ball_x = next_x_pos - ball->Radius;
-   max_ball_x = next_x_pos + ball->Radius;
-   min_ball_y = next_y_pos - ball->Radius;
-   max_ball_y = next_y_pos + ball->Radius;
+   min_ball_x = next_x_pos - AsConfig::Ball_Radius;
+   max_ball_x = next_x_pos + AsConfig::Ball_Radius;
+   min_ball_y = next_y_pos - AsConfig::Ball_Radius;
+   max_ball_y = next_y_pos + AsConfig::Ball_Radius;
 
    min_level_x = (int)((min_ball_x - AsConfig::Level_X_Offset) / (double)AsConfig::Cell_Width);
    if (min_level_x < 0)
@@ -209,13 +209,13 @@ void AsLevel::Draw(HDC hdc, RECT& paint_area)
 
       int i, j;
 
-      RECT itersection_rect, brick_rect;
+      RECT intersection_rect, brick_rect;
 
       // Рисуем движущиеся объекты
       if (Advertisement != 0)
          Advertisement->Draw(hdc, paint_area);
 
-      if (IntersectRect(&itersection_rect, &paint_area, &Level_Rect))
+      if (IntersectRect(&intersection_rect, &paint_area, &Level_Rect))
       {
          for (i = 0; i < AsConfig::Level_Height; i++)
             for (j = 0; j < AsConfig::Level_Width; j++)
@@ -225,7 +225,7 @@ void AsLevel::Draw(HDC hdc, RECT& paint_area)
                brick_rect.right = brick_rect.left + AsConfig::Brick_Width * AsConfig::Global_Scale;
                brick_rect.bottom = brick_rect.top + AsConfig::Brick_Height * AsConfig::Global_Scale;
 
-               if (IntersectRect(&itersection_rect, &paint_area, &brick_rect))
+               if (IntersectRect(&intersection_rect, &paint_area, &brick_rect))
                {
                   Draw_Brick(hdc, brick_rect, j, i);
                }
@@ -352,7 +352,32 @@ bool AsLevel::Has_Brick_At(int level_x, int level_y)
       return true;
 }
 //-------------------------------------------------------------------------------------------------------------------------
-bool AsLevel::On_Hit(int brick_x, int brick_y, ABall *ball, bool vertical_hit)
+bool AsLevel::Has_Brick_At(RECT &monster_rect)
+{
+   int i, j;
+   int scale = AsConfig::Global_Scale;
+   int x_step = AsConfig::Cell_Width * scale;
+   int y_step = AsConfig::Cell_Height * scale;
+   int level_x_offset = AsConfig::Level_X_Offset * scale;
+   int level_y_offset = AsConfig::Level_Y_Offset * scale;
+   int min_level_x, max_level_x;
+   int min_level_y, max_level_y;
+
+   min_level_x = (monster_rect.left - level_x_offset) / x_step;
+   max_level_x = (monster_rect.right - level_x_offset) / x_step;
+
+   min_level_y = (monster_rect.top - level_y_offset) / y_step;
+   max_level_y = (monster_rect.bottom - level_y_offset) / y_step;
+
+   for (i = min_level_y; i <= max_level_y; i++)
+      for (j = min_level_x; j <= max_level_x; j++)
+         if (Has_Brick_At(j, i))
+            return true;
+
+   return false;
+}
+//-------------------------------------------------------------------------------------------------------------------------
+bool AsLevel::On_Hit(int brick_x, int brick_y, ABall_Object *ball, bool vertical_hit)
 {
    EBrick_Type brick_type;
    bool can_reflect = true;
@@ -441,7 +466,7 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
    return false;
 }
 //-------------------------------------------------------------------------------------------------------------------------
-bool AsLevel::Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall *ball, bool vertical_hit)
+bool AsLevel::Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall_Object *ball, bool vertical_hit)
 { // Создаем активный кирпич если можем
    AActive_Brick *active_brick = 0;
 
@@ -501,7 +526,7 @@ bool AsLevel::Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_ty
    return true;
 }
 //-------------------------------------------------------------------------------------------------------------------------
-void AsLevel::Add_Active_Brick_Teleport(int brick_x, int brick_y, ABall* ball, bool vertical_hit)
+void AsLevel::Add_Active_Brick_Teleport(int brick_x, int brick_y, ABall_Object *ball, bool vertical_hit)
 {
    int i;
    bool got_direction;
@@ -627,14 +652,14 @@ AActive_Brick_Teleport *AsLevel::Select_Destination_Teleport(int source_x, int s
    return destination_teleport;
 }
 //-------------------------------------------------------------------------------------------------------------------------
-bool AsLevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall * ball, double& reflection_pos)
+bool AsLevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall_Object *ball, double& reflection_pos)
 {
    double direction = ball->Get_Direction();
 
    if (ball->Is_Moving_Up())
    { // Попадание в нижнюю грань
 
-      if (Hit_Circle_On_Line(next_y_pos - Current_Brick_Low_Y, next_x_pos, Current_Brick_Left_X, Current_Brick_Right_X, ball->Radius, reflection_pos))
+      if (Hit_Circle_On_Line(next_y_pos - Current_Brick_Low_Y, next_x_pos, Current_Brick_Left_X, Current_Brick_Right_X, AsConfig::Ball_Radius, reflection_pos))
       { // Проверка возможности отскока вниз
          if (level_y < AsConfig::Level_Height - 1 && Current_Level[level_y + 1][level_x] == 0)
          {
@@ -648,7 +673,7 @@ bool AsLevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level
    else
    { // Попадание в верхнюю грань
 
-      if (Hit_Circle_On_Line(next_y_pos - Current_Brick_Top_Y, next_x_pos, Current_Brick_Left_X, Current_Brick_Right_X, ball->Radius, reflection_pos))
+      if (Hit_Circle_On_Line(next_y_pos - Current_Brick_Top_Y, next_x_pos, Current_Brick_Left_X, Current_Brick_Right_X, AsConfig::Ball_Radius, reflection_pos))
       { // Проверка возможности отскока вверх
          if (level_y > 0 && Current_Level[level_y - 1][level_x] == 0)
          {
@@ -662,14 +687,14 @@ bool AsLevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level
    return false;
 }
 //-------------------------------------------------------------------------------------------------------------------------
-bool AsLevel::Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall* ball, double &reflection_pos)
+bool AsLevel::Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall_Object *ball, double &reflection_pos)
 {
    double direction = ball->Get_Direction();
   
    if (!ball->Is_Moving_Left())
    { // Попадание в левую грань
 
-      if (Hit_Circle_On_Line(Current_Brick_Left_X - next_x_pos, next_y_pos, Current_Brick_Top_Y, Current_Brick_Low_Y, ball->Radius, reflection_pos))
+      if (Hit_Circle_On_Line(Current_Brick_Left_X - next_x_pos, next_y_pos, Current_Brick_Top_Y, Current_Brick_Low_Y, AsConfig::Ball_Radius, reflection_pos))
       { // Проверка возможности отскока влeво
          if (level_x > 0 && Current_Level[level_y][level_x - 1] == 0)
          {
@@ -683,7 +708,7 @@ bool AsLevel::Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int lev
    else
    { // Попадание в правую грань
 
-      if (Hit_Circle_On_Line(Current_Brick_Right_X - next_x_pos, next_y_pos, Current_Brick_Top_Y, Current_Brick_Low_Y, ball->Radius, reflection_pos))
+      if (Hit_Circle_On_Line(Current_Brick_Right_X - next_x_pos, next_y_pos, Current_Brick_Top_Y, Current_Brick_Low_Y, AsConfig::Ball_Radius, reflection_pos))
       { // Проверка возможности отскока вправо
          if (level_x < AsConfig::Level_Width - 1 && Current_Level[level_y][level_x + 1] == 0)
          {

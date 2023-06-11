@@ -32,41 +32,41 @@ AsBorder::AsBorder()
    Gates[7] = new AGate(AsConfig::Max_X_Pos, 178);
 }
 //-------------------------------------------------------------------------------------------------------------------------
-bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
+bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall_Object *ball)
 {//Корректируем движения отражения от рамки
 
    bool got_hit = false;
 
    // Отрижение от левого края
-   if (next_x_pos - ball->Radius < AsConfig::Boeder_X_Offset)
+   if (next_x_pos - AsConfig::Ball_Radius < AsConfig::Boeder_X_Offset)
    {
       got_hit = true;
       ball->Reflect(false);
    }
 
    // Отрижение от верхнего края
-   if (next_y_pos - ball->Radius < AsConfig::Boeder_Y_Offset)
+   if (next_y_pos - AsConfig::Ball_Radius < AsConfig::Boeder_Y_Offset)
    {
       got_hit = true;
       ball->Reflect(true);
    }
 
    // Отрижение от правого края
-   if (next_x_pos + ball->Radius > AsConfig::Max_X_Pos + 1)
+   if (next_x_pos + AsConfig::Ball_Radius > AsConfig::Max_X_Pos + 1)
    {
       got_hit = true;
       ball->Reflect(false);
    }
 
    // Отрижение от пола
-   if (AsConfig::Level_Has_Floor && next_y_pos + ball->Radius > AsConfig::Floor_Y_Pos)
+   if (AsConfig::Level_Has_Floor && next_y_pos + AsConfig::Ball_Radius > AsConfig::Floor_Y_Pos)
    {
       got_hit = true;
       ball->Reflect(true);
    }
 
    // чтобы щарик смог улететь нижу пола, поланрим его макс У поз
-   if (next_y_pos + ball->Radius > AsConfig::Max_Y_Pos + ball->Radius * 4.0)
+   if (next_y_pos + AsConfig::Ball_Radius > AsConfig::Max_Y_Pos + AsConfig::Ball_Radius * 4.0)
       ball->Set_State(EBall_State::Lost);
 
    return got_hit;

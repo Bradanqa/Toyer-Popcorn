@@ -46,8 +46,8 @@ void AFalling_Letter::Act()
 //-------------------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Clear(HDC hdc, RECT& paint_area)
 {
-   RECT itersection_rect;
-   if (!IntersectRect(&itersection_rect, &paint_area, &Prev_Letter_Cell))
+   RECT intersection_rect;
+   if (!IntersectRect(&intersection_rect, &paint_area, &Prev_Letter_Cell))
       return;
 
    // Стираем предыдущее изображение
@@ -56,7 +56,7 @@ void AFalling_Letter::Clear(HDC hdc, RECT& paint_area)
 //-------------------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Draw(HDC hdc, RECT& paint_area)
 {
-   RECT itersection_rect;
+   RECT intersection_rect;
 
    if (Falling_Letter_State == EFalling_Letter_State::Finalizing)
    {
@@ -65,7 +65,7 @@ void AFalling_Letter::Draw(HDC hdc, RECT& paint_area)
    }
 
 
-   if (IntersectRect(&itersection_rect, &paint_area, &Letter_Cell))
+   if (IntersectRect(&intersection_rect, &paint_area, &Letter_Cell))
       Draw_Brick_Letter(hdc);
 }
 //-------------------------------------------------------------------------------------------------------------------------

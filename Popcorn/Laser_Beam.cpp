@@ -49,7 +49,7 @@ void ALaser_Beam::Act()
 //-------------------------------------------------------------------------------------------------------------------------
 void ALaser_Beam::Clear(HDC hdc, RECT& paint_area)
 {
-	RECT itersection_rect;
+	RECT intersection_rect;
 
 	if (Laser_Beam_State == ELaser_Beam_State::Disabled)
 		return;
@@ -57,7 +57,7 @@ void ALaser_Beam::Clear(HDC hdc, RECT& paint_area)
 	if (Laser_Beam_State == ELaser_Beam_State::Clean_Up)
 		Laser_Beam_State = ELaser_Beam_State::Disabled;
 
-	if (!IntersectRect(&itersection_rect, &paint_area, &Prev_Beam_Rect))
+	if (!IntersectRect(&intersection_rect, &paint_area, &Prev_Beam_Rect))
 		return;
 
 	AsTools::Rect(hdc, Prev_Beam_Rect, AsConfig::BG_Color);
@@ -66,7 +66,7 @@ void ALaser_Beam::Clear(HDC hdc, RECT& paint_area)
 void ALaser_Beam::Draw(HDC hdc, RECT &paint_area)
 {
 	int x_pos, y_pos;
-	RECT itersection_rect;
+	RECT intersection_rect;
 
 	if (Laser_Beam_State == ELaser_Beam_State::Disabled)
 		return;
@@ -74,7 +74,7 @@ void ALaser_Beam::Draw(HDC hdc, RECT &paint_area)
 	if (Laser_Beam_State == ELaser_Beam_State::Stopping)
 		Laser_Beam_State = ELaser_Beam_State::Clean_Up;
 
-	if (!IntersectRect(&itersection_rect, &paint_area, &Beam_Rect))
+	if (!IntersectRect(&intersection_rect, &paint_area, &Beam_Rect))
 		return;
 
 	AsConfig::Laser_Color.Select(hdc);
