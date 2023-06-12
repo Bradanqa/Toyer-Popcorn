@@ -2,6 +2,7 @@
 
 
 // AsPlatform
+AHit_Checker_List AsPlatform::Hit_Checker_List;
 //------------------------------------------------------------------------------------------------------------
 AsPlatform::~AsPlatform()
 {
@@ -116,6 +117,8 @@ void AsPlatform::Advance(double max_speed)
 			if (Platform_State.Moving == EPlatform_Moving_State::Moving_Right)
 				Ball_Set->On_Platform_Advance(0.0, fabs(Speed), max_speed);
 	}
+
+	Hit_Checker_List.Check_Hit(Platform_Rect);
 }
 //------------------------------------------------------------------------------------------------------------
 double AsPlatform::Get_Speed()
@@ -186,6 +189,7 @@ void AsPlatform::Clear(HDC hdc, RECT& paint_area)
 	}
 	//else - no break
 
+	case EPlatform_State::Meltdown:
 	case EPlatform_State::Rolling:
 	case EPlatform_State::Glue:
 	case EPlatform_State::Laser:
@@ -455,9 +459,10 @@ void AsPlatform::Act_For_Meltdown_State()
 		break;
 
 	case EPlatform_Substate_Meltdown::Active:
-		Redraw_Platform();
 		break;
 	}
+
+	Redraw_Platform();
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Act_For_Rolling_State()

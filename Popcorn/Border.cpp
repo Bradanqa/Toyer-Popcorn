@@ -173,20 +173,21 @@ int AsBorder::Long_Open_Gate()
    {
       gate = Gates[gate_index];
 
-      if (gate->Is_Closed())
-      {
-         if (gate->Level_X_Pos == -1)
+      if (gate_index != AsConfig::Gate_Count - 1) // Гейт из которого выкатывается платформа не выпускает монстра
+         if (gate->Is_Closed())
          {
-            got_gate = true;
-            break;
-         }
+            if (gate->Level_X_Pos == -1)
+            {
+               got_gate = true;
+               break;
+            }
 
-         if(! AsLevel::Has_Brick_At(gate->Level_X_Pos, gate->Level_Y_Pos) && AsLevel::Has_Brick_At(gate->Level_X_Pos, gate->Level_Y_Pos + 1) )
-         {
-            got_gate = true;
-            break;
+            if(! AsLevel::Has_Brick_At(gate->Level_X_Pos, gate->Level_Y_Pos) && AsLevel::Has_Brick_At(gate->Level_X_Pos, gate->Level_Y_Pos + 1) )
+            {
+               got_gate = true;
+               break;
+            }
          }
-      }
       
       ++gate_index;
 

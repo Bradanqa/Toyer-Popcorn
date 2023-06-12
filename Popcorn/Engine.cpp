@@ -38,6 +38,8 @@ void AsEngine::Init_Engine(HWND hwnd)
    ALaser_Beam::Hit_Checker_List.Add_Hit_Checker(&Level);
    ALaser_Beam::Hit_Checker_List.Add_Hit_Checker(&Monster_Set);
 
+   AsPlatform::Hit_Checker_List.Add_Hit_Checker(&Monster_Set);
+
    Level.Set_Current_Level(AsLevel::Level_01);
 
    Platform.Redraw_Platform();
@@ -144,18 +146,12 @@ void AsEngine::Play_Level()
    {// Потеряли все мячики
       Game_State = EGame_State::Lost_Ball;
       Level.Stop();
+      Monster_Set.Destroy_All();
+      Laser_Beam_Set.Disable_All();
       Platform.Set_State(EPlatform_State::Meltdown);
    }
    else
-   {
       Ball_Set.Accelerate();
-   }
-
-      /*Balls[i].Get_Center(ball_x, ball_y);
-
-      if (ball_x >= Platform.Platform_X_Pos && ball_x <= Platform.Platform_X_Pos + Platform.Platform_Width)
-         if (ball_y >= AsConfig::Platform_Y_Pos + 1 && ball_y <= AsConfig::Platform_Y_Pos + 6)
-            int yy = 0;*/
 
    if (Ball_Set.Is_Test_Finished())
       Game_State = EGame_State::Test_Ball;

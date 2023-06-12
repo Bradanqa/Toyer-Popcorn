@@ -29,6 +29,17 @@ bool AsMonster_Set::Check_Hit(double next_x_pos, double next_y_pos)
 	return false;
 }
 //------------------------------------------------------------------------------------------------------------
+bool AsMonster_Set::Check_Hit(RECT &rect)
+{
+	int i;
+
+	for (i = 0; i < Max_Monsters_Count; i++)
+		if (Monsters[i].Check_Hit(rect))
+			return true;
+
+	return false;
+}
+//------------------------------------------------------------------------------------------------------------
 void AsMonster_Set::Act()
 {
 	int i;
@@ -124,6 +135,16 @@ void AsMonster_Set::Activate(int max_alive_monsters_count)
 	Monster_Set_State = EMonster_Set_State::Select_Next_Gate;
 
 	Max_Alive_Monsters_Count = max_alive_monsters_count;
+}
+//------------------------------------------------------------------------------------------------------------
+void AsMonster_Set::Destroy_All()
+{
+	int i;
+
+	for (i = 0; i < Max_Monsters_Count; i++)
+		Monsters[i].Destroy();
+
+	Monster_Set_State = EMonster_Set_State::Idle;
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsMonster_Set::Get_Next_Game_Object(int &index, AGame_Object **game_object)

@@ -21,6 +21,9 @@ bool AMonster::Check_Hit(double next_x_pos, double next_y_pos, ABall_Object *bal
 
 	double radius = (double)Width / 2.0;
 
+	if (!(Monster_State == EMonster_State::Emitting || Monster_State == EMonster_State::Alive))
+		return false;
+
 	if (! AsTools::Reflect_On_Circle(next_x_pos, next_y_pos, X_Pos + radius, Y_Pos + radius, radius, ball))
 		return false;
 
@@ -31,9 +34,34 @@ bool AMonster::Check_Hit(double next_x_pos, double next_y_pos, ABall_Object *bal
 //-------------------------------------------------------------------------------------------------------------------------
 bool AMonster::Check_Hit(double next_x_pos, double next_y_pos)
 {
-	return false;
+	if (!(Monster_State == EMonster_State::Emitting || Monster_State == EMonster_State::Alive))
+		return false;
+
+	if (next_x_pos >= X_Pos && next_x_pos <= X_Pos + (double)Width
+		&& next_y_pos >= Y_Pos && next_y_pos <= Y_Pos + (double)Height)
+	{
+		Destroy();
+		return true;
+	} 
+	else
+		return false;
 }
 //-------------------------------------------------------------------------------------------------------------------------
+bool AMonster::Check_Hit(RECT &rect)
+{
+	RECT intersection_rect;
+
+	if (!(Monster_State == EMonster_State::Emitting || Monster_State == EMonster_State::Alive))
+		return false;
+
+	if (IntersectRect(&intersection_rect, &rect, &Monster_Rect))
+	{
+		Destroy();
+		return true;
+	}
+	else
+		return false;
+}
 //-------------------------------------------------------------------------------------------------------------------------
 void AMonster::Begin_Movement()
 {
@@ -99,7 +127,7 @@ void AMonster::Advance(double max_speed)
 			next_y_pos = (double)AsConfig::Level_Y_Offset;
 
 		if (next_y_pos + (double)Height > (double)AsConfig::Max_Y_Pos)
-			next_y_pos = (double)AsConfig::Max_Y_Pos - Height;
+			next_y_pos = (double)AsConfig::Floor_Y_Pos - Height;
 	}
 
 	X_Pos = next_x_pos;

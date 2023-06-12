@@ -151,6 +151,11 @@ bool AHit_Checker::Check_Hit(double next_x_pos, double next_y_pos)
    return false;
 }
 //-------------------------------------------------------------------------------------------------------------------------
+bool AHit_Checker::Check_Hit(RECT& rect)
+{
+   return false;
+}
+//-------------------------------------------------------------------------------------------------------------------------
 bool AHit_Checker::Hit_Circle_On_Line(double y, double next_x_pos, double left_x, double right_x, double radius, double& x)
 { // Проверяет пересечание горизонтального отрезка (проходящего от left_x до right_x через у) с окружностью радиусом radius
 
@@ -212,6 +217,17 @@ bool AHit_Checker_List::Check_Hit(double x_pos, double y_pos)
 
    for (i = 0; i < Hit_Checkers_Count; i++)
       if (Hit_Checkers[i]->Check_Hit(x_pos, y_pos))
+         return true;
+
+   return false;
+}
+//-------------------------------------------------------------------------------------------------------------------------
+bool AHit_Checker_List::Check_Hit(RECT &rect)
+{
+   int i;
+
+   for (i = 0; i < Hit_Checkers_Count; i++)
+      if (Hit_Checkers[i]->Check_Hit(rect))
          return true;
 
    return false;

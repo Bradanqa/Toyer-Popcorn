@@ -54,9 +54,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	return (int)msg.wParam;
 }
-
 //-------------------------------------------------------------------------------------------------------------------------
-
 
 //
 //  FUNCTION: MyRegisterClass()
@@ -170,7 +168,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		Engine.Draw_Frame(hdc, ps.rcPaint);
 		EndPaint(hWnd, &ps);
 	break;
-
 
 	case WM_DESTROY:
 		PostQuitMessage(0);

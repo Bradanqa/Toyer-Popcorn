@@ -34,7 +34,7 @@ public:
    bool Hit_By(AFalling_Letter *falling_letter);
    double Get_Middle_Pos();
 
-   double Platform_X_Pos;
+   static AHit_Checker_List Hit_Checker_List;
 
 private:
    bool Set_Transformation_State(EPlatform_State new_state, EPlatform_Transformation& transformation_state);
@@ -54,6 +54,7 @@ private:
    bool Left_Key_Down, Right_Key_Down;
 
    double Speed;
+   double Platform_X_Pos;
    int Meltdown_Y_Pos;
    int Inner_width;
    int Rolling_Step;
