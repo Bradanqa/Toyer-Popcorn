@@ -22,6 +22,7 @@ enum class EMonster_State : unsigned char
 class AMonster : public AHit_Checker, public AGame_Object
 {
 public:
+   virtual ~AMonster();
    AMonster();
 
    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall_Object *ball);
@@ -39,38 +40,77 @@ public:
    virtual bool Is_Finished();
 
    void Activate(int x_pos, int y_pos, bool moving_right);
-   bool Is_Active();
    void Destroy();
 
    static const int Width = 16;
    static const int Height = 16;
 
+protected:
+   virtual void Draw_Alive(HDC hdc) = 0;
+   virtual void Act_Alive() = 0;
+   virtual void On_Activation() = 0;
+
+   EMonster_State Monster_State;
+   RECT Monster_Rect, Prev_Monster_Rect;
+
+   int Next_Direction_Switch_Tick;
+   double X_Pos, Y_Pos;
+   double Direction;
+   int Alive_Timer_Tick;
+
 private:
-   void Draw_Alive(HDC hdc);
    void Draw_Destroing(HDC hdc, RECT &paint_area);
-   void Act_Alive();
    void Act_Destroing();
    void Get_Monster_Rect(double x_pos, double y_pos, RECT& rect);
    void Redraw_Monster();
+   void Change_Direction();
 
-   EEye_State Eye_State;
-   EMonster_State Monster_State;
-   double X_Pos, Y_Pos;
-   double Cornea_Height;
-   int Start_Blink_Timeout, Total_Animation_Timeout;
-   double Speed, Direction;
-   int Next_Direction_Switch_Tick;
-   int Alive_Timer_Tick;
-   RECT Monster_Rect, Prev_Monster_Rect;
+   double Speed;
 
-   static const int Blink_Stages_Count = 7;
    static const int Explosive_Balls_Count = 20;
 
-   int Blink_Ticks[Blink_Stages_Count];
    AExplosive_Ball Explosive_Balls[Explosive_Balls_Count];
+};
+//-------------------------------------------------------------------------------------------------------------------------
+class AMonster_Eye : public AMonster
+{
+public:
+   AMonster_Eye();
+
+private:
+   virtual void Draw_Alive(HDC hdc);
+   virtual void Act_Alive();
+   virtual void On_Activation();
+
+   EEye_State Eye_State;
+
+   double Cornea_Height;
+   int Start_Blink_Timeout, Total_Animation_Timeout;
+
+   static const int Blink_Stages_Count = 7;
+   int Blink_Ticks[Blink_Stages_Count];
 
    static const double Max_Cornea_Height;
    static const double Blinks_Timeouts[Blink_Stages_Count];
    static const EEye_State Blink_States[Blink_Stages_Count];
+};
+//-------------------------------------------------------------------------------------------------------------------------
+class AMonster_Comet : public AMonster
+{
+public:
+   AMonster_Comet();
+
+private:
+   virtual void Clear(HDC hdc, RECT &paint_area);
+
+   virtual void Draw_Alive(HDC hdc);
+   virtual void Act_Alive();
+   virtual void On_Activation();
+
+   double Current_Angle;
+   int Tick_Per_Rotation;
+
+   static const int Min_Tick_Per_Rotation = AsConfig::FPS * 2;
+   static const int Max_Tick_Per_Rotation = AsConfig::FPS * 4;
 };
 //-------------------------------------------------------------------------------------------------------------------------

@@ -2,17 +2,13 @@
 
 
 // AMonster
-const double AMonster::Max_Cornea_Height = 11.0;
-const double AMonster::Blinks_Timeouts[Blink_Stages_Count] = {0.4, 0.2, 0.8, 0.4, 0.4, 0.4, 0.8};
-const EEye_State AMonster::Blink_States[Blink_Stages_Count] =
+//-------------------------------------------------------------------------------------------------------------------------
+AMonster::~AMonster()
 {
-	EEye_State::Closed, EEye_State::Opening, EEye_State::Staring, EEye_State::Closing,
-	EEye_State::Opening, EEye_State::Staring, EEye_State::Closing
-};
+}
 //-------------------------------------------------------------------------------------------------------------------------
 AMonster::AMonster()
-	: Monster_State(EMonster_State::Missing), Eye_State(EEye_State::Closed), X_Pos(0.0), Y_Pos(0.0), Cornea_Height(Max_Cornea_Height), Start_Blink_Timeout(0),
-	Total_Animation_Timeout(0), Speed(0.0), Direction(0.0), Next_Direction_Switch_Tick(0), Alive_Timer_Tick(0), Monster_Rect{}, Blink_Ticks{}
+	: Monster_State(EMonster_State::Missing), X_Pos(0.0), Y_Pos(0.0), Speed(0.0), Direction(0.0), Next_Direction_Switch_Tick(0), Alive_Timer_Tick(0), Monster_Rect{}
 {
 }
 //-------------------------------------------------------------------------------------------------------------------------
@@ -70,7 +66,7 @@ void AMonster::Begin_Movement()
 //-------------------------------------------------------------------------------------------------------------------------
 void AMonster::Finish_Movement()
 {
-	if (!Is_Active())
+	if (Is_Finished())
 		return;
 
 	Redraw_Monster();
@@ -90,7 +86,7 @@ void AMonster::Advance(double max_speed)
 
 	next_step = Speed / max_speed * AsConfig::Moving_Step_Size;
 
-	origin_direction = Direction;
+	origin_direction = Direction; 
 
 	for (i = 0; i < 16; i++)
 	{
@@ -147,12 +143,15 @@ void AMonster::Act()
 		return;
 
 	case EMonster_State::Emitting:
+		Act_Alive();
+
 		if (AsConfig::Current_Timer_Tick >= Alive_Timer_Tick)
 			Monster_State = EMonster_State::Alive;
 		break;
 
 	case EMonster_State::Alive:
 		Act_Alive();
+		Change_Direction();
 		break;
 
 	case EMonster_State::Destroing:
@@ -205,16 +204,16 @@ void AMonster::Draw(HDC hdc, RECT& paint_area)
 //-------------------------------------------------------------------------------------------------------------------------
 bool AMonster::Is_Finished()
 {
-	return false;
+	if (Monster_State == EMonster_State::Missing)
+		return true;
+	else
+		return false;
 }
 //-------------------------------------------------------------------------------------------------------------------------
 void AMonster::Activate(int x_pos, int y_pos, bool moving_right)
 {
-	int i;
-	int tick_offset;
 	int rand_speed;
 	int emitting_time_offset;
-	double curr_timeout = 0.0;
 	const int scale = AsConfig::Global_Scale;
 
 	Monster_State = EMonster_State::Emitting;
@@ -234,40 +233,29 @@ void AMonster::Activate(int x_pos, int y_pos, bool moving_right)
 		Direction = M_PI;
 
 	// Рассчитываем тики анимации
-	Start_Blink_Timeout = AsConfig::Current_Timer_Tick;
-
-	for (i = 0; i < Blink_Stages_Count; i++)
-	{
-		curr_timeout += Blinks_Timeouts[i];
-		tick_offset = (int)((double)AsConfig::FPS * curr_timeout);
-		Blink_Ticks[i] = tick_offset;
-	}
-
-	Total_Animation_Timeout = tick_offset;
+	On_Activation();
 
 	Redraw_Monster();
-}
-//-------------------------------------------------------------------------------------------------------------------------
-bool AMonster::Is_Active()
-{
-	if (Monster_State == EMonster_State::Missing)
-		return false;
-	else
-		return true;
 }
 //-------------------------------------------------------------------------------------------------------------------------
 void AMonster::Destroy()
 {
 	const int scale = AsConfig::Global_Scale;
 	int i;
-	int half_width = Width * scale / 2;
-	int half_height = Height * scale / 2;
-	int x_pos = (int)(X_Pos * AsConfig::D_Global_Scale) + half_width;
-	int y_pos = (int)(Y_Pos * AsConfig::D_Global_Scale) + half_height;
+	int half_width, half_height;
+	int x_pos, y_pos;
 	int x_offset, y_offset;
 	int size, half_size, rest_size;
 	int time_offset;
 	bool is_red;
+
+	if (!(Monster_State == EMonster_State::Emitting || Monster_State == EMonster_State::Alive))
+		return;
+
+	half_width = Width * scale / 2;
+	half_height = Height * scale / 2;
+	x_pos = (int)(X_Pos * AsConfig::D_Global_Scale) + half_width;
+	y_pos = (int)(Y_Pos * AsConfig::D_Global_Scale) + half_height;
 
 	half_size = half_width;
 
@@ -299,7 +287,84 @@ void AMonster::Destroy()
 	Monster_State = EMonster_State::Destroing;
 }
 //-------------------------------------------------------------------------------------------------------------------------
-void AMonster::Draw_Alive(HDC hdc)
+void AMonster::Draw_Destroing(HDC hdc, RECT &paint_area)
+{
+	int i;
+
+	for (i = 0; i < Explosive_Balls_Count; i++)
+	{
+		Explosive_Balls[i].Draw(hdc, paint_area);
+	}
+}
+//-------------------------------------------------------------------------------------------------------------------------
+void AMonster::Act_Destroing()
+{
+	int i;
+	bool destroing_is_finished = true;
+
+	for (i = 0; i < Explosive_Balls_Count; i++)
+	{
+		Explosive_Balls[i].Act();
+
+		destroing_is_finished &= Explosive_Balls[i].Is_Finished();
+	}
+
+	if (destroing_is_finished)
+		Monster_State = EMonster_State::Missing;
+}
+//-------------------------------------------------------------------------------------------------------------------------
+void AMonster::Get_Monster_Rect(double x_pos, double y_pos, RECT &rect)
+{
+	int scale = AsConfig::Global_Scale;
+
+	rect.left = (int)(x_pos * AsConfig::D_Global_Scale);
+	rect.top = (int)(y_pos * AsConfig::D_Global_Scale);
+	rect.right = rect.left + Width * scale;
+	rect.bottom = rect.top + Height * scale;
+}
+//-------------------------------------------------------------------------------------------------------------------------
+void AMonster::Redraw_Monster()
+{
+	Prev_Monster_Rect = Monster_Rect;
+
+	Get_Monster_Rect(X_Pos, Y_Pos, Monster_Rect);
+
+	AsTools::Invalidate_Rect(Monster_Rect);
+	AsTools::Invalidate_Rect(Prev_Monster_Rect);
+}
+//-------------------------------------------------------------------------------------------------------------------------
+void AMonster::Change_Direction()
+{
+	double direction_delta;
+
+	if (AsConfig::Current_Timer_Tick > Next_Direction_Switch_Tick)
+	{//Меняем интервал изменения движения
+
+		Next_Direction_Switch_Tick += AsTools::Rand(AsConfig::FPS); 
+
+		direction_delta = (double)(AsTools::Rand(90) - 45) * M_PI / 180.0;
+		Direction += direction_delta;
+	}
+}
+//-------------------------------------------------------------------------------------------------------------------------
+
+
+
+// AMonster_Eye
+const double AMonster_Eye::Max_Cornea_Height = 11.0;
+const double AMonster_Eye::Blinks_Timeouts[Blink_Stages_Count] = {0.4, 0.2, 0.8, 0.4, 0.4, 0.4, 0.8};
+const EEye_State AMonster_Eye::Blink_States[Blink_Stages_Count] =
+{
+	EEye_State::Closed, EEye_State::Opening, EEye_State::Staring, EEye_State::Closing,
+	EEye_State::Opening, EEye_State::Staring, EEye_State::Closing
+};
+//-------------------------------------------------------------------------------------------------------------------------
+AMonster_Eye::AMonster_Eye()
+	:Eye_State(EEye_State::Closed), Cornea_Height(Max_Cornea_Height), Start_Blink_Timeout(0), Total_Animation_Timeout(0), Blink_Ticks{}
+{
+}
+//-------------------------------------------------------------------------------------------------------------------------
+void AMonster_Eye::Draw_Alive(HDC hdc)
 {
 	HRGN region;
 	RECT rect, cornea_rect;
@@ -377,23 +442,12 @@ void AMonster::Draw_Alive(HDC hdc)
 	Arc(hdc, cornea_rect.left, cornea_rect.top, cornea_rect.right - 1, cornea_rect.bottom - 1, 0, 0, 0, 0);
 }
 //-------------------------------------------------------------------------------------------------------------------------
-void AMonster::Draw_Destroing(HDC hdc, RECT &paint_area)
-{
-	int i;
-
-	for (i = 0; i < Explosive_Balls_Count; i++)
-	{
-		Explosive_Balls[i].Draw(hdc, paint_area);
-	}
-}
-//-------------------------------------------------------------------------------------------------------------------------
-void AMonster::Act_Alive()
+void AMonster_Eye::Act_Alive()
 {
 	int i;
 	int curr_tick_offset;
 	int prev_tick;
 	double ratio;
-	double direction_delta;
 
 	if (Monster_State == EMonster_State::Missing)
 		return;
@@ -437,51 +491,123 @@ void AMonster::Act_Alive()
 	default:
 		AsConfig::Throw();
 	}
-
-	if (AsConfig::Current_Timer_Tick > Next_Direction_Switch_Tick)
-	{//Меняем интервал изменения движения
-
-		Next_Direction_Switch_Tick += AsTools::Rand(AsConfig::FPS); 
-
-		direction_delta = (double)(AsTools::Rand(90) - 45) * M_PI / 180.0;
-		Direction += direction_delta;
-	}
 }
 //-------------------------------------------------------------------------------------------------------------------------
-void AMonster::Act_Destroing()
+void AMonster_Eye::On_Activation()
 {
 	int i;
-	bool destroing_is_finished = true;
+	int tick_offset;
+	double curr_timeout = 0.0;
 
-	for (i = 0; i < Explosive_Balls_Count; i++)
+	Start_Blink_Timeout = AsConfig::Current_Timer_Tick;
+
+	for (i = 0; i < Blink_Stages_Count; i++)
 	{
-		Explosive_Balls[i].Act();
-
-		destroing_is_finished &= Explosive_Balls[i].Is_Finished();
+		curr_timeout += Blinks_Timeouts[i];
+		tick_offset = (int)((double)AsConfig::FPS * curr_timeout);
+		Blink_Ticks[i] = tick_offset;
 	}
 
-	if (destroing_is_finished)
-		Monster_State = EMonster_State::Missing;
+	Total_Animation_Timeout = tick_offset;
 }
 //-------------------------------------------------------------------------------------------------------------------------
-void AMonster::Get_Monster_Rect(double x_pos, double y_pos, RECT &rect)
-{
-	int scale = AsConfig::Global_Scale;
 
-	rect.left = (int)(x_pos * AsConfig::D_Global_Scale);
-	rect.top = (int)(y_pos * AsConfig::D_Global_Scale);
-	rect.right = rect.left + Width * scale;
-	rect.bottom = rect.top + Height * scale;
+
+
+
+// AMonster_Comet
+//-------------------------------------------------------------------------------------------------------------------------
+AMonster_Comet::AMonster_Comet()
+	: Current_Angle(0.0), Tick_Per_Rotation(0)
+{
+	int rotation_tick_delta = Max_Tick_Per_Rotation - Min_Tick_Per_Rotation;
+
+	Tick_Per_Rotation = AsTools::Rand(rotation_tick_delta) + Min_Tick_Per_Rotation;
 }
 //-------------------------------------------------------------------------------------------------------------------------
-void AMonster::Redraw_Monster()
+void AMonster_Comet::Clear(HDC hdc, RECT& paint_area)
 {
-	Prev_Monster_Rect = Monster_Rect;
+	RECT intersection_rect;
 
-	Get_Monster_Rect(X_Pos, Y_Pos, Monster_Rect);
+	if (!IntersectRect(&intersection_rect, &paint_area, &Prev_Monster_Rect))
+		return;
 
-	AsTools::Invalidate_Rect(Monster_Rect);
-	AsTools::Invalidate_Rect(Prev_Monster_Rect);
+	AsTools::Rect(hdc, Prev_Monster_Rect, AsConfig::BG_Color);
+}
+//-------------------------------------------------------------------------------------------------------------------------
+void AMonster_Comet::Draw_Alive(HDC hdc)
+{
+	int i;
+	double alpha;
+	double monster_radius;
+	XFORM xform, old_xform;
+	RECT rect;
+	const int scale = AsConfig::Global_Scale;
+	const double d_scale = AsConfig::D_Global_Scale;
+	int ball_size = 4 * scale - scale / 2;
+
+	if (Monster_State == EMonster_State::Missing)
+		return;
+
+	monster_radius = (double)(Width * d_scale / 2.0 - 1.0);
+	alpha = Current_Angle;
+
+	GetWorldTransform(hdc, &old_xform);
+
+	for (i = 0; i < 2; i++)
+	{
+		xform.eM11 = (float)cos(alpha);
+		xform.eM12 = (float)sin(alpha);
+		xform.eM21 = (float)-sin(alpha);
+		xform.eM22 = (float)cos(alpha);
+		xform.eDx = (float)(X_Pos * d_scale + monster_radius);
+		xform.eDy = (float)(Y_Pos * d_scale + monster_radius);
+		SetWorldTransform(hdc, &xform);
+
+		alpha += M_PI;
+
+		rect.left = (int)-monster_radius;
+		rect.top = -ball_size / 2;
+		rect.right = rect.left + ball_size;
+		rect.bottom = rect.top + ball_size;
+
+		AsTools::Ellipse(hdc, rect, AsConfig::White_Color);
+
+		rect.left = (int)(-monster_radius + 2 * d_scale);
+		rect.top = (int)(-monster_radius + 2 * d_scale);
+		rect.right = (int)(monster_radius - 2 * d_scale);
+		rect.bottom = (int)(monster_radius - 2 * d_scale);
+
+		AsConfig::Monster_Comet_Tail.Select_Pen(hdc);
+		Arc(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1, 0, (int)(-monster_radius), (int)(-monster_radius), (int)(-4 * d_scale));
+
+		rect.left += scale;
+		rect.right -= scale;
+		rect.bottom -= scale;
+
+		Arc(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1, 0, (int)(-monster_radius), (int)(-monster_radius), (int)(-4 * d_scale));
+	}
+
+	SetWorldTransform(hdc, &old_xform);
+}
+//-------------------------------------------------------------------------------------------------------------------------
+void AMonster_Comet::Act_Alive()
+{
+	int time_offset;
+	double ratio;
+
+	if (Monster_State == EMonster_State::Missing)
+		return;
+
+	time_offset = (AsConfig::Current_Timer_Tick - Alive_Timer_Tick) % Tick_Per_Rotation;
+	ratio = (double)time_offset / (double)Tick_Per_Rotation;
+
+	Current_Angle = -ratio * 2.0 * M_PI;
+}
+//-------------------------------------------------------------------------------------------------------------------------
+void AMonster_Comet::On_Activation()
+{
+
 }
 //-------------------------------------------------------------------------------------------------------------------------
 

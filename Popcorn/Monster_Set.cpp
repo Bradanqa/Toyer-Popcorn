@@ -5,6 +5,7 @@
 AsMonster_Set::AsMonster_Set()
 : Monster_Set_State(EMonster_Set_State::Idle), Border(0), Current_Gate_Index(-1), Max_Alive_Monsters_Count(0)
 {
+	memset(Monsters, 0, sizeof(AMonster*) * Max_Monsters_Count);
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsMonster_Set::Check_Hit(double next_x_pos, double next_y_pos, ABall_Object* ball)
@@ -12,7 +13,7 @@ bool AsMonster_Set::Check_Hit(double next_x_pos, double next_y_pos, ABall_Object
 	int i;
 
 	for (i = 0; i < Max_Monsters_Count; i++)
-		if (Monsters[i].Check_Hit(next_x_pos, next_y_pos, ball))
+		if (Monsters[i] != 0 && Monsters[i]->Check_Hit(next_x_pos, next_y_pos, ball))
 			return true;
 		
 	return false;
@@ -23,7 +24,7 @@ bool AsMonster_Set::Check_Hit(double next_x_pos, double next_y_pos)
 	int i;
 
 	for (i = 0; i < Max_Monsters_Count; i++)
-		if (Monsters[i].Check_Hit(next_x_pos, next_y_pos))
+		if (Monsters[i] != 0 && Monsters[i]->Check_Hit(next_x_pos, next_y_pos))
 			return true;
 
 	return false;
@@ -34,7 +35,7 @@ bool AsMonster_Set::Check_Hit(RECT &rect)
 	int i;
 
 	for (i = 0; i < Max_Monsters_Count; i++)
-		if (Monsters[i].Check_Hit(rect))
+		if (Monsters[i] != 0 && Monsters[i]->Check_Hit(rect))
 			return true;
 
 	return false;
@@ -56,7 +57,7 @@ void AsMonster_Set::Act()
 
 		for (i = 0; i < Max_Monsters_Count; i++)
 		{
-			if (Monsters[i].Is_Active())
+			if (Monsters[i] != 0 && !Monsters[i]->Is_Finished())
 				++current_alive_count;
 		}
 
@@ -86,6 +87,16 @@ void AsMonster_Set::Act()
 		break;
 	}
 
+	if (Monster_Set_State != EMonster_Set_State::Idle)
+	{
+		for (i = 0; i < Max_Monsters_Count; i++)
+			if (Monsters[i] != 0 && Monsters[i]->Is_Finished())
+			{
+				delete Monsters[i];
+				Monsters[i] = 0;
+			}
+	}
+
 	AGame_Objects_Set::Act();
 }
 //------------------------------------------------------------------------------------------------------------
@@ -98,6 +109,7 @@ void AsMonster_Set::Emit_At_Gate(int gate_index)
 {
 	int i;
 	int gate_x_pos, gate_y_pos;
+	int monster_type;
 	bool gate_is_left;
 	AMonster *monster = 0;
 
@@ -106,9 +118,15 @@ void AsMonster_Set::Emit_At_Gate(int gate_index)
 
 	for (i = 0; i < Max_Monsters_Count; i++)
 	{
-		if (! Monsters[i].Is_Active())
+		if (Monsters[i] == 0)
 		{
-			monster = &Monsters[i];
+			monster_type = AsTools::Rand(2);
+			if(monster_type == 0)
+				monster = new AMonster_Comet();
+			else
+				monster = new AMonster_Eye();
+
+			Monsters[i] = monster;
 			break;
 		}
 	}
@@ -142,18 +160,29 @@ void AsMonster_Set::Destroy_All()
 	int i;
 
 	for (i = 0; i < Max_Monsters_Count; i++)
-		Monsters[i].Destroy();
+		if (Monsters[i] != 0)
+			Monsters[i]->Destroy();
 
 	Monster_Set_State = EMonster_Set_State::Idle;
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsMonster_Set::Get_Next_Game_Object(int &index, AGame_Object **game_object)
 {
-	if (index < 0 || index >= AsConfig::Max_Ball_Count)
+	AMonster *monster;
+
+	if (index < 0 || index >= Max_Monsters_Count)
 		return false;
 
-	*game_object = &Monsters[index++];
+	while (index < Max_Monsters_Count)
+	{
+		monster = Monsters[index++];
 
-	return true;
+		if (monster != 0)
+		{
+			*game_object = monster;
+			return true;
+		}
+	}
+	return false;
 }
 //------------------------------------------------------------------------------------------------------------
