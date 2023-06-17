@@ -22,6 +22,7 @@ const AColor AsConfig::Monster_Comet_Tail(Monster_Dark_Orange, Global_Scale);
 const AColor AsConfig::Monster_Cornea_Color(BG_Color, White_Color, Global_Scale * 2 / 3);
 const AColor AsConfig::Monster_Iris_Color(BG_Color, Blue_Color, Global_Scale * 2 / 3);
 const AColor AsConfig::BG_Outline_Color(BG_Color, Global_Scale * 2 / 3);
+const AColor AsConfig::BG_Bold_Color(BG_Color, Global_Scale);
 const AColor AsConfig::Explosion_Dark_Orange(White_Color, Orange_Color, 0);
 const AColor AsConfig::Explosion_Dark_Blue(White_Color, Blue_Color, 0);
 

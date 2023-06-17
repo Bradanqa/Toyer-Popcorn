@@ -58,6 +58,7 @@ public:
 class AColor
 {
 public:
+   ~AColor();
    AColor();
    AColor(unsigned char r, unsigned char g, unsigned char b);
    AColor(unsigned char r, unsigned char g, unsigned char b, int pen_size);

@@ -40,6 +40,7 @@ public:
 
 	void Get_Letter_Cell(RECT &rect);
 	void Finalize();
+	void Show_Full_Size();
 	void Test_Draw_All_Steps(HDC hdc);
 
 	static void Init();
