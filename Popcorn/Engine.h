@@ -5,6 +5,7 @@
 #include "Ball_Set.h"
 #include "Monster_Set.h"
 #include "Info_Panel.h"
+#include <vector>
 
 //-------------------------------------------------------------------------------------------------------------------------
 enum class EGame_State: unsigned char
@@ -41,7 +42,6 @@ private:
    void Advance_Movers();
    void Act();
    void On_Falling_Letter(AFalling_Letter *falling_letter);
-   void Add_Next_Module(int &index, AGame_Object *object);
 
    EGame_State Game_State;
    double Rest_Distance;
@@ -55,9 +55,6 @@ private:
    AsMonster_Set Monster_Set;
    AsInfo_Panel Info_Panel;
 
-   //AMover *Movers[AsConfig::Max_Movers_Count];
-   //AGraphics_Object *Modules[AsConfig::Max_Modules_Count];
-
-   AGame_Object *Modules[AsConfig::Max_Modules_Count];
+   std::vector<AGame_Object *> Modules;
 };
 //-------------------------------------------------------------------------------------------------------------------------

@@ -48,32 +48,27 @@ void AsEngine::Init_Engine(HWND hwnd)
    SetTimer(AsConfig::Hwnd, Timer_ID, 1000 / AsConfig::FPS, 0);
 
    // Modules
-   memset(Modules, 0, sizeof(Modules));
    index = 0;
 
-   Add_Next_Module(index, &Level);
-   Add_Next_Module(index, &Border);
-   Add_Next_Module(index, &Platform);
-   Add_Next_Module(index, &Ball_Set);
-   Add_Next_Module(index, &Laser_Beam_Set);
-   Add_Next_Module(index, &Monster_Set);
-   Add_Next_Module(index, &Info_Panel);
+   Modules.push_back(&Level);
+   Modules.push_back(&Border);
+   Modules.push_back(&Platform);
+   Modules.push_back(&Ball_Set);
+   Modules.push_back(&Laser_Beam_Set);
+   Modules.push_back(&Monster_Set);
+   Modules.push_back(&Info_Panel);
 }
 //-------------------------------------------------------------------------------------------------------------------------
 void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area)
 {// Отрисовка экрана игры
 
-   int i;
-
    SetGraphicsMode(hdc, GM_ADVANCED);
 
-   for (i = 0; i < AsConfig::Max_Modules_Count; i++)
-      if (Modules[i] != 0)
-         Modules[i]->Clear(hdc, paint_area);
+   for (auto *curr_module : Modules)
+      curr_module->Clear(hdc, paint_area);
 
-   for (i = 0; i < AsConfig::Max_Modules_Count; i++)
-      if (Modules[i] != 0)
-         Modules[i]->Draw(hdc, paint_area);
+   for (auto *curr_module : Modules)
+      curr_module->Draw(hdc, paint_area);
 }
 //-------------------------------------------------------------------------------------------------------------------------
 int AsEngine::On_Key(EKey_Type key_type, bool key_down)
@@ -161,21 +156,17 @@ void AsEngine::Play_Level()
 //-------------------------------------------------------------------------------------------------------------------------
 void AsEngine::Advance_Movers()
 {
-   int i;
    double current_speed, max_speed = 0.0;
 
    // Получаем максимальную скорость движущихся объектов
-   for (i = 0; i < AsConfig::Max_Movers_Count; i++)
+   for (auto *curr_module : Modules)
    {
-      if (Modules[i] != 0)
-      {
-         Modules[i]->Begin_Movement();
+      curr_module->Begin_Movement();
 
-         current_speed = fabs(Modules[i]->Get_Speed());
+      current_speed = fabs(curr_module->Get_Speed());
 
-         if (current_speed > max_speed)
-            max_speed = current_speed;
-      }
+      if (current_speed > max_speed)
+         max_speed = current_speed;
    }
 
    // 1. Смещаем все объекты
@@ -183,31 +174,25 @@ void AsEngine::Advance_Movers()
 
    while (Rest_Distance > 0.0)
    {
-      for (i = 0; i < AsConfig::Max_Movers_Count; i++)
-      {
-         if (Modules[i] != 0)
-            Modules[i]->Advance(max_speed);
-      }
+      for (auto *curr_module : Modules)
+         curr_module->Advance(max_speed);
 
       Rest_Distance -= AsConfig::Moving_Step_Size;
    }
 
    // Заканчиваем все движения на этом кадре
-   for (i = 0; i < AsConfig::Max_Movers_Count; i++)
-      if (Modules[i] != 0)
-         Modules[i]->Finish_Movement();
+   for (auto *curr_module : Modules)
+      curr_module->Finish_Movement();
 }
 //-------------------------------------------------------------------------------------------------------------------------
 void AsEngine::Act()
 {
-   int i;
    int index = 0;
    AFalling_Letter *falling_letter;
 
    // 1. Выполняем все действия
-   for (i = 0; i < AsConfig::Max_Modules_Count; i++)
-      if (Modules[i] != 0)
-         Modules[i]->Act();
+   for (auto *curr_module : Modules)
+      curr_module->Act();
 
    // 2. Ловим пдаюзие буквы
    while (Level.Get_Next_Falling_Letter(index, &falling_letter) )
@@ -282,14 +267,4 @@ void AsEngine::On_Falling_Letter(AFalling_Letter *falling_letter)
    falling_letter->Finalize();
 }
 //-------------------------------------------------------------------------------------------------------------------------
-void AsEngine::Add_Next_Module(int &index, AGame_Object *object)
-{
-   if (index >= 0 && index < AsConfig::Max_Modules_Count)
-      Modules[index++] = object;
-   else
-      AsConfig::Throw();
-}
-//-------------------------------------------------------------------------------------------------------------------------
-
-
 

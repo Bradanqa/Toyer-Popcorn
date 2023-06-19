@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "Falling_Letter.h"
+#include <vector>
+
 //-------------------------------------------------------------------------------------------------------------------------
 struct SPoint
 {
@@ -44,17 +46,14 @@ private:
 	bool Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_type);
 	bool Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall_Object *ball, bool vertical_hit);
 	void Add_Active_Brick_Teleport(int brick_x, int brick_y, ABall_Object* ball, bool vertical_hit);
-	void Add_New_Active_Brick(AActive_Brick* active_brick);
 	AActive_Brick_Teleport* Select_Destination_Teleport(int source_x, int source_y);
 	bool Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall_Object *ball, double &reflection_pos);
 	bool Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall_Object *ball, double &reflection_pos);
 	void Draw_Brick(HDC hdc, RECT &brick_rect, int level_x, int level_y);
 	void Draw_Parachute_In_Level(HDC hdc, RECT& brick_type);
 	void Draw_Parachute_Part(HDC hdc, RECT& brick_rect, int offset, int width);
-	void Clear_Objects(HDC hdc, RECT& paint_area, AGraphics_Object** objects_array, int object_max_count);
-	void Delete_Objects(AGraphics_Object** objects_array, int& object_count, int object_max_count);
-	void Draw_Objects(HDC hdc, RECT &paint_area, AGraphics_Object **objects_array, int object_max_count);
-	void Act_Objects(AGraphics_Object **objects_array, int &object_count, const int object_max_count);
+	void Delete_Objects(std::vector<AGraphics_Object*>& falling_letters);
+	void Act_Objects(std::vector<AGraphics_Object*>& falling_letters);
 	void Cancel_All_Activity();
 
 	RECT Level_Rect;
@@ -67,10 +66,8 @@ private:
 
 	char Current_Level[AsConfig::Level_Height][AsConfig::Level_Width];
 
-	int Active_Bricks_Count;
-	AActive_Brick *Active_Bricks[AsConfig::Max_Active_Bricks_Count];
-	int Falling_Letters_Count;
-	AFalling_Letter* Falling_Letters[AsConfig::Max_Falling_Letters_Count];
+	std::vector<AGraphics_Object*> Falling_Letters;
+	std::vector<AGraphics_Object*> Active_Bricks;
 	int Teleport_Bricks_Count;
 	SPoint *Teleport_Bricks_Pos;
 	AAdvertisement *Advertisement;

@@ -52,7 +52,7 @@ AsLevel::~AsLevel()
 }
 //-------------------------------------------------------------------------------------------------------------------------
 AsLevel::AsLevel()
-   : Level_Rect{}, Need_To_Cancel_All(false), Active_Bricks_Count(0), Falling_Letters_Count(0), Teleport_Bricks_Count(0), Teleport_Bricks_Pos(0),
+   : Level_Rect{}, Need_To_Cancel_All(false), Teleport_Bricks_Count(0), Teleport_Bricks_Pos(0),
    Parachute_Color(AsConfig::Orange_Color, AsConfig::Blue_Color, AsConfig::Global_Scale), Advertisement(0)
 {
    Level = this;
@@ -181,8 +181,8 @@ double AsLevel::Get_Speed()
 //-------------------------------------------------------------------------------------------------------------------------
 void AsLevel::Act()
 {
-   Act_Objects((AGraphics_Object**)Active_Bricks, Active_Bricks_Count, AsConfig::Max_Active_Bricks_Count);
-   Act_Objects((AGraphics_Object**)Falling_Letters, Falling_Letters_Count, AsConfig::Max_Falling_Letters_Count);
+   Act_Objects(Active_Bricks);
+   Act_Objects(Falling_Letters);
 
    if (Advertisement != 0)
       Advertisement->Act();
@@ -191,7 +191,8 @@ void AsLevel::Act()
 void AsLevel::Clear(HDC hdc, RECT& paint_area)
 {// Стираем все движущиеся объекты
 
-   Clear_Objects(hdc, paint_area, (AGraphics_Object**)&Falling_Letters, AsConfig::Max_Falling_Letters_Count);
+   for (auto* letter : Falling_Letters)
+      letter->Clear(hdc, paint_area);
 
    if (Advertisement != 0)
       Advertisement->Clear(hdc, paint_area);
@@ -216,7 +217,6 @@ void AsLevel::Draw(HDC hdc, RECT& paint_area)
          Advertisement->Draw(hdc, paint_area);
 
       if (IntersectRect(&intersection_rect, &paint_area, &Level_Rect))
-      {
          for (i = 0; i < AsConfig::Level_Height; i++)
             for (j = 0; j < AsConfig::Level_Width; j++)
             {
@@ -226,14 +226,15 @@ void AsLevel::Draw(HDC hdc, RECT& paint_area)
                brick_rect.bottom = brick_rect.top + AsConfig::Brick_Height * AsConfig::Global_Scale;
 
                if (IntersectRect(&intersection_rect, &paint_area, &brick_rect))
-               {
                   Draw_Brick(hdc, brick_rect, j, i);
-               }
             }
-         Draw_Objects(hdc, paint_area, (AGraphics_Object**)&Active_Bricks, AsConfig::Max_Active_Bricks_Count);
-      }
-      Draw_Objects(hdc, paint_area, (AGraphics_Object**)&Falling_Letters, AsConfig::Max_Falling_Letters_Count);
+
+         for (auto *brick : Active_Bricks)
+            brick->Draw(hdc, paint_area);
    }
+
+   for (auto *letter : Falling_Letters)
+      letter->Draw(hdc, paint_area);
 }
 //-------------------------------------------------------------------------------------------------------------------------
 bool AsLevel::Is_Finished()
@@ -249,8 +250,6 @@ void AsLevel::Init()
    Level_Rect.bottom = Level_Rect.top + AsConfig::Cell_Height * AsConfig::Level_Height * AsConfig::Global_Scale;
 
    memset(Current_Level, 0, sizeof(Current_Level) );
-   memset(Active_Bricks, 0, sizeof(Active_Bricks) );
-   memset(Falling_Letters, 0, sizeof(Falling_Letters));
 }
 //-------------------------------------------------------------------------------------------------------------------------
 void AsLevel::Set_Current_Level(char level[AsConfig::Level_Height][AsConfig::Level_Width])
@@ -307,25 +306,12 @@ void AsLevel::Set_Current_Level(char level[AsConfig::Level_Height][AsConfig::Lev
 //-------------------------------------------------------------------------------------------------------------------------
 bool AsLevel::Get_Next_Falling_Letter(int &index, AFalling_Letter **(falling_letter))
 {
-   AFalling_Letter *current_letter;
-
-   if (Falling_Letters_Count == 0)
-      return false;
-
-   if (index < 0 || index >= AsConfig::Max_Falling_Letters_Count)
-      return false;
-
-   while (index < AsConfig::Max_Falling_Letters_Count)
+   if (index < Falling_Letters.size())
    {
-      current_letter = Falling_Letters[index++];
-
-      if (current_letter != 0)
-      {
-         *falling_letter = current_letter;
-
-         return true;
-      }
+      *falling_letter = (AFalling_Letter *)Falling_Letters[index++];
+      return true;
    }
+
    return false;
 }
 //-------------------------------------------------------------------------------------------------------------------------
@@ -430,47 +416,39 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
    
    if (AsTools::Rand(AsConfig::Hits_Per_Letter) != 0)
       return false;
-     
-   if (Falling_Letters_Count >= AsConfig::Max_Falling_Letters_Count)
+
+   if (Falling_Letters.size() >= AsConfig::Max_Falling_Letters_Count)
       return false;
 
-   for (i = 0; i < AsConfig::Max_Falling_Letters_Count; i++)
-   {
-      if (Falling_Letters[i] == 0)
-      {
-         letter_x = (brick_x * AsConfig::Cell_Width + AsConfig::Level_X_Offset) * AsConfig::Global_Scale;
-         letter_y = (brick_y * AsConfig::Cell_Height + AsConfig::Level_Y_Offset) * AsConfig::Global_Scale;
+   letter_x = (brick_x * AsConfig::Cell_Width + AsConfig::Level_X_Offset) * AsConfig::Global_Scale;
+   letter_y = (brick_y * AsConfig::Cell_Height + AsConfig::Level_Y_Offset) * AsConfig::Global_Scale;
    
-         letter_type = AFalling_Letter::Get_Random_Letter_Type();
-         switch (AsTools::Rand(3))
-         {
-         case 0:
-            letter_type = ELetter_Type::L;
-            break;
+   letter_type = AFalling_Letter::Get_Random_Letter_Type();
+   switch (AsTools::Rand(3))
+   {
+   case 0:
+      letter_type = ELetter_Type::L;
+      break;
 
-         case 1:
-            letter_type = ELetter_Type::K;
-            break;
+   case 1:
+      letter_type = ELetter_Type::K;
+      break;
 
-         case 2:
-            letter_type = ELetter_Type::W;
-            break;
-         }
-         
-         falling_letter = new AFalling_Letter(brick_type, letter_type, letter_x, letter_y);
-         Falling_Letters[i] = falling_letter;
-         ++Falling_Letters_Count;
-         return true;
-      }
+   case 2:
+      letter_type = ELetter_Type::W;
+      break;
    }
-   return false;
+   
+   falling_letter = new AFalling_Letter(brick_type, letter_type, letter_x, letter_y);
+   Falling_Letters.push_back(falling_letter);
+   return true;
 }
 //-------------------------------------------------------------------------------------------------------------------------
 bool AsLevel::Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall_Object *ball, bool vertical_hit)
 { // Создаем активный кирпич если можем
    AActive_Brick *active_brick = 0;
 
-   if (Active_Bricks_Count >= AsConfig::Max_Active_Bricks_Count)
+   if (Active_Bricks.size() >= AsConfig::Max_Active_Bricks_Count)
       return true;
    
    switch (brick_type)
@@ -521,7 +499,7 @@ bool AsLevel::Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_ty
    }
 
    if(active_brick != 0)
-      Add_New_Active_Brick(active_brick);
+      Active_Bricks.push_back(active_brick);
 
    return true;
 }
@@ -606,23 +584,8 @@ void AsLevel::Add_Active_Brick_Teleport(int brick_x, int brick_y, ABall_Object *
 
    destination_teleport->Release_Direction = direction;
 
-   Add_New_Active_Brick(source_teleport);
-   Add_New_Active_Brick(destination_teleport);
-}
-//-------------------------------------------------------------------------------------------------------------------------
-void AsLevel::Add_New_Active_Brick(AActive_Brick* active_brick)
-{
-   int i;
-
-   for (i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
-   {
-      if (Active_Bricks[i] == 0)
-      {
-         Active_Bricks[i] = active_brick;
-         ++Active_Bricks_Count;
-         break;
-      }
-   }
+   Active_Bricks.push_back(source_teleport);
+   Active_Bricks.push_back(destination_teleport);
 }
 //-------------------------------------------------------------------------------------------------------------------------
 AActive_Brick_Teleport *AsLevel::Select_Destination_Teleport(int source_x, int source_y)
@@ -784,7 +747,7 @@ void AsLevel::Draw_Parachute_Part(HDC hdc, RECT& brick_rect, int offset, int wid
    RECT rect;
 
    //1. Верхний сегмент
-   rect.left = brick_rect.left + 2 + offset * scale - 1;
+   rect.left = brick_rect.left + offset * scale + 1;
    rect.top = brick_rect.top + 1;
    rect.right = rect.left + width * scale + 1;
    rect.bottom = rect.top + 3 * scale + 1;
@@ -799,66 +762,32 @@ void AsLevel::Draw_Parachute_Part(HDC hdc, RECT& brick_rect, int offset, int wid
    AsTools::Round_Rect(hdc, rect);
 }
 //-------------------------------------------------------------------------------------------------------------------------
-void AsLevel::Clear_Objects(HDC hdc, RECT& paint_area, AGraphics_Object** objects_array, int object_max_count)
+void AsLevel::Delete_Objects(std::vector<AGraphics_Object*>& falling_letters)
 {
-   int i;
+   for (auto it = falling_letters.begin(); it != falling_letters.end(); it++)
+      delete *it;
 
-   for (i = 0; i < object_max_count; i++)
-   {
-      if (objects_array[i] != 0)
-         objects_array[i]->Clear(hdc, paint_area);
-   }
+   falling_letters.erase(falling_letters.begin(), falling_letters.end());
 }
 //-------------------------------------------------------------------------------------------------------------------------
-void AsLevel::Delete_Objects(AGraphics_Object **objects_array, int &object_count, int object_max_count)
+void AsLevel::Act_Objects(std::vector<AGraphics_Object*> &falling_letters)
 {
-   int i;
-
-   for (i = 0; i < object_max_count; i++)
+   for (auto it = falling_letters.begin(); it != falling_letters.end(); it++)
    {
-      if (objects_array[i] != 0)
+      (*it)->Act();
+
+      if ((*it)->Is_Finished())
       {
-         delete objects_array[i];
-         objects_array[i] = 0;
-      }
-   }
-   object_count = 0;
-}
-//-------------------------------------------------------------------------------------------------------------------------
-void AsLevel::Draw_Objects(HDC hdc, RECT & paint_area, AGraphics_Object **objects_array, int object_max_count)
-{
-   int i;
-
-   for (i = 0; i < object_max_count; i++)
-   {
-      if (objects_array[i] != 0)
-         objects_array[i]->Draw(hdc, paint_area);
-   }
-}
-//-------------------------------------------------------------------------------------------------------------------------
-void AsLevel::Act_Objects(AGraphics_Object **objects_array, int &object_count, const int object_max_count)
-{
-   int i;
-   for (i = 0; i < object_max_count; i++)
-   {
-      if (objects_array[i] != 0)
-      {
-         objects_array[i]->Act();
-
-         if (objects_array[i]->Is_Finished())
-         {
-            delete objects_array[i];
-            objects_array[i] = 0;
-            --object_count;
-         }
+          delete *it;
+          it = falling_letters.erase(it);
       }
    }
 }
 //-------------------------------------------------------------------------------------------------------------------------
 void AsLevel::Cancel_All_Activity()
 {
-   Delete_Objects((AGraphics_Object**)Active_Bricks, Active_Bricks_Count, AsConfig::Max_Active_Bricks_Count);
-   Delete_Objects((AGraphics_Object**)Falling_Letters, Falling_Letters_Count, AsConfig::Max_Falling_Letters_Count);
+   Delete_Objects(Active_Bricks);
+   Delete_Objects(Falling_Letters);
 }
 //-------------------------------------------------------------------------------------------------------------------------
 
