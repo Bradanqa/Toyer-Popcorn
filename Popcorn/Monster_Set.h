@@ -14,6 +14,7 @@ enum class EMonster_Set_State : unsigned char
 class AsMonster_Set : public AHit_Checker, public AGame_Objects_Set
 {
 public:
+   ~AsMonster_Set();
    AsMonster_Set();
 
    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall_Object *ball);
@@ -37,6 +38,6 @@ private:
 
    static const int Max_Monsters_Count = 10;
 
-   AMonster *Monsters[Max_Monsters_Count];
+   std::vector<AMonster*> Monsters;
 };
 //-------------------------------------------------------------------------------------------------------------------------
