@@ -93,8 +93,6 @@ HBRUSH AColor::Get_Brush() const
 //-------------------------------------------------------------------------------------------------------------------------
 bool AsConfig::Level_Has_Floor = false;
 int AsConfig::Current_Timer_Tick = 0;
-int AsConfig::Score = 0;
-int AsConfig::Extra_Life_Count = 5;
 
 const AColor AsConfig::BG_Color(0, 0, 0);
 const AColor AsConfig::Orange_Color(255, 118, 14);
